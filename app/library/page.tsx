@@ -22,6 +22,7 @@ import {
 import { PlaceholdersAndVanishInput } from "@/ui/placeholders-and-vanish-input";
 import axios from "axios";
 import { useState } from "react";
+import { PointerCard } from "@/components/PointerCard";
 
 // import { Input } from "@material-tailwind/react";
 
@@ -29,11 +30,11 @@ export default function BentoGridDemo() {
   const [query, setQuery] = useState<string | any>();
   const [books, setBooks] = useState<[string]>();
   const placeholders = [
-    "What's the first rule of Fight Club?",
-    "Who is Tyler Durden?",
-    "Where is Andrew Laeddis Hiding?",
-    "Write a Javascript method to reverse a string",
-    "How to assemble your own PC?",
+    "Fight Club",
+    "Tyler Durden",
+    "Andrew Laeddis",
+    "Javascript",
+    "Assemble",
   ];
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -68,7 +69,7 @@ export default function BentoGridDemo() {
         />
       </div>
       {/* <Input/> */}
-      <BentoGrid className="max-w-4xl mx-auto">
+      <BentoGrid className="max-w-4xl mx-auto gap-4">
         {/* {items.map((item, i) => (
           <BentoGridItem
             key={i}
@@ -87,18 +88,26 @@ export default function BentoGridDemo() {
                 description={item.description}
                 header={item.header}
                 icon={item.icon}
-                className={i === 3 || i === 6 ? "md:col-span-2" : ""}
+                // className={i === 3 || i === 6 ? "md:col-span-2" : ""}
               />
             ))
           : books.map((item: any, i) => (
               <BentoGridItem
                 key={i}
-                title={(item.volumeInfo.title) ? item.volumeInfo.title?.slice(0, 50) + "..." : ""}
-                description={(item.volumeInfo.description) ? item.volumeInfo.description?.slice(0, 150) + "..." : ""}
-                header={item.volumeInfo.header}
-                icon={(item.volumeInfo.imageLinks.thumbnail) ? (<img src={item.volumeInfo.imageLinks.thumbnail} className="h-[10rem] w-[95%] rounded-lg mx-auto"/>) : (<IconClipboardCopy className="h-4 w-4 text-neutral-500" />) }
-                className={i === 3 || i === 6 ? "md:col-span-2" : ""}
+                title={item.volumeInfo.title?.slice(0, 50) + "..." || ""}
+                description={
+                  item.volumeInfo.description?.slice(0, 150) + "..." || ""
+                }
+                imageURL={item.volumeInfo.imageLinks.thumbnail || ""}
+                redirectURL={`http://localhost:3000/book/${item.volumeInfo.industryIdentifiers[0].identifier}` || ""}
               />
+              // <PointerCard
+              //   key={i}
+              //   title={(item.volumeInfo.title?.slice(0, 50) + "...") || ""}
+              //   description={(item.volumeInfo.description?.slice(0, 150) + "...") || ""}
+              //   imageURL={item.volumeInfo.imageLinks.thumbnail || ""}
+              //   redirectURL={`http://localhost:3000/book/${item.volumeInfo.industryIdentifiers[0].identifier}` || ""}
+              // />
             ))}
       </BentoGrid>
     </ClerkProvider>
