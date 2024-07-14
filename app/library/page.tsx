@@ -1,7 +1,8 @@
 "use client";
 import { cn } from "@/lib/utils";
-import React from "react";
+import React, { useEffect } from "react";
 import { BentoGrid, BentoGridItem } from "@/ui/bento-grid";
+import { Button } from "@/ui/button";
 import {
   IconArrowWaveRightUp,
   IconBoxAlignRightFilled,
@@ -18,17 +19,31 @@ import {
   SignedOut,
   SignInButton,
   UserButton,
+  useUser,
 } from "@clerk/nextjs";
 import { PlaceholdersAndVanishInput } from "@/ui/placeholders-and-vanish-input";
 import axios from "axios";
 import { useState } from "react";
-import { PointerCard } from "@/components/PointerCard";
+import { getUserData } from "@/supabase/supabase";
+// import { PointerCard } from "@/components/PointerCard";
 
 // import { Input } from "@material-tailwind/react";
 
 export default function BentoGridDemo() {
   const [query, setQuery] = useState<string | any>();
   const [books, setBooks] = useState<[string]>();
+  const [supaUser, setSupaUser] = useState<any>();
+  const { isLoaded, user }: { isLoaded: boolean; user: any | null } = useUser();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (isLoaded) {
+        const response = await getUserData(user.user_id);
+        setSupaUser(response);
+      }
+    };
+    fetchData();
+  }, [isLoaded]);
   const placeholders = [
     "Fight Club",
     "Tyler Durden",
@@ -48,7 +63,6 @@ export default function BentoGridDemo() {
     );
     if (response) {
       setBooks(response.data.items);
-      console.log("success: ", response);
     }
   };
   return (
@@ -58,6 +72,7 @@ export default function BentoGridDemo() {
           <SignInButton />
         </SignedOut>
         <SignedIn>
+          <Button variant="outline">Button</Button>
           <UserButton />
         </SignedIn>
       </div>
@@ -87,8 +102,8 @@ export default function BentoGridDemo() {
                 title={item.title}
                 description={item.description}
                 header={item.header}
-                icon={item.icon}
-                // className={i === 3 || i === 6 ? "md:col-span-2" : ""}
+                imageURL={item.imageURL}
+                redirectURL={item.redirectURL || ""}
               />
             ))
           : books.map((item: any, i) => (
@@ -99,7 +114,10 @@ export default function BentoGridDemo() {
                   item.volumeInfo.description?.slice(0, 150) + "..." || ""
                 }
                 imageURL={item.volumeInfo.imageLinks.thumbnail || ""}
-                redirectURL={`http://localhost:3000/book/${item.volumeInfo.industryIdentifiers[0].identifier}` || ""}
+                redirectURL={
+                  `http://localhost:3000/book/${item.volumeInfo.industryIdentifiers[0].identifier}` ||
+                  ""
+                }
               />
               // <PointerCard
               //   key={i}
@@ -122,18 +140,24 @@ const items = [
     description: "Explore the birth of groundbreaking ideas and inventions.",
     header: <Skeleton />,
     icon: <IconClipboardCopy className="h-4 w-4 text-neutral-500" />,
+    imageURL: "https://source.unsplash.com/random/800x600",
+    redirectURL: "https://example.com/dawn-of-innovation", // Replace with your desired redirect URL
   },
   {
     title: "The Digital Revolution",
     description: "Dive into the transformative power of technology.",
     header: <Skeleton />,
     icon: <IconFileBroken className="h-4 w-4 text-neutral-500" />,
+    imageURL: "https://source.unsplash.com/random/800x600",
+    redirectURL: "https://example.com/digital-revolution", // Replace with your desired redirect URL
   },
   {
     title: "The Art of Design",
     description: "Discover the beauty of thoughtful and functional design.",
     header: <Skeleton />,
     icon: <IconSignature className="h-4 w-4 text-neutral-500" />,
+    imageURL: "https://source.unsplash.com/random/800x600",
+    redirectURL: "https://example.com/art-of-design", // Replace with your desired redirect URL
   },
   {
     title: "The Power of Communication",
@@ -141,23 +165,31 @@ const items = [
       "Understand the impact of effective communication in our lives.",
     header: <Skeleton />,
     icon: <IconTableColumn className="h-4 w-4 text-neutral-500" />,
+    imageURL: "https://source.unsplash.com/random/800x600",
+    redirectURL: "https://example.com/power-of-communication", // Replace with your desired redirect URL
   },
   {
     title: "The Pursuit of Knowledge",
     description: "Join the quest for understanding and enlightenment.",
     header: <Skeleton />,
     icon: <IconArrowWaveRightUp className="h-4 w-4 text-neutral-500" />,
+    imageURL: "https://source.unsplash.com/random/800x600",
+    redirectURL: "https://example.com/pursuit-of-knowledge", // Replace with your desired redirect URL
   },
   {
     title: "The Joy of Creation",
     description: "Experience the thrill of bringing ideas to life.",
     header: <Skeleton />,
     icon: <IconBoxAlignTopLeft className="h-4 w-4 text-neutral-500" />,
+    imageURL: "https://source.unsplash.com/random/800x600",
+    redirectURL: "https://example.com/joy-of-creation", // Replace with your desired redirect URL
   },
   {
     title: "The Spirit of Adventure",
     description: "Embark on exciting journeys and thrilling discoveries.",
     header: <Skeleton />,
     icon: <IconBoxAlignRightFilled className="h-4 w-4 text-neutral-500" />,
+    imageURL: "https://source.unsplash.com/random/800x600",
+    redirectURL: "https://example.com/spirit-of-adventure", // Replace with your desired redirect URL
   },
 ];
