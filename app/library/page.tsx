@@ -27,6 +27,7 @@ import { useState } from "react";
 
 export default function BentoGridDemo() {
   const [query, setQuery] = useState<string | any>();
+  const [books, setBooks] = useState<[string]>();
   const placeholders = [
     "What's the first rule of Fight Club?",
     "Who is Tyler Durden?",
@@ -41,11 +42,12 @@ export default function BentoGridDemo() {
   };
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const response = await axios.get(
+    const response: any = await axios.get(
       `https://www.googleapis.com/books/v1/volumes?q=${query}`
     );
     if (response) {
-      console.log("success");
+      setBooks(response.data.items);
+      console.log("success: ", response);
     }
   };
   return (
@@ -67,7 +69,7 @@ export default function BentoGridDemo() {
       </div>
       {/* <Input/> */}
       <BentoGrid className="max-w-4xl mx-auto">
-        {items.map((item, i) => (
+        {/* {items.map((item, i) => (
           <BentoGridItem
             key={i}
             title={item.title}
@@ -76,7 +78,28 @@ export default function BentoGridDemo() {
             icon={item.icon}
             className={i === 3 || i === 6 ? "md:col-span-2" : ""}
           />
-        ))}
+        ))} */}
+        {!books
+          ? items.map((item, i) => (
+              <BentoGridItem
+                key={i}
+                title={item.title}
+                description={item.description}
+                header={item.header}
+                icon={item.icon}
+                className={i === 3 || i === 6 ? "md:col-span-2" : ""}
+              />
+            ))
+          : books.map((item: any, i) => (
+              <BentoGridItem
+                key={i}
+                title={(item.volumeInfo.title) ? item.volumeInfo.title?.slice(0, 50) + "..." : ""}
+                description={(item.volumeInfo.description) ? item.volumeInfo.description?.slice(0, 150) + "..." : ""}
+                header={item.volumeInfo.header}
+                icon={(item.volumeInfo.imageLinks.thumbnail) ? (<img src={item.volumeInfo.imageLinks.thumbnail} className="h-[10rem] w-[95%] rounded-lg mx-auto"/>) : (<IconClipboardCopy className="h-4 w-4 text-neutral-500" />) }
+                className={i === 3 || i === 6 ? "md:col-span-2" : ""}
+              />
+            ))}
       </BentoGrid>
     </ClerkProvider>
   );
